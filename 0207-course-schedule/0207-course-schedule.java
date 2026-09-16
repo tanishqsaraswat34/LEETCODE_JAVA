@@ -4,35 +4,32 @@ class Solution {
         for (int i=0;i<numCourses;i++){
             graph.add(new ArrayList<>());
         }
+        int[] indegree= new int[numCourses];
         for(int[] p : prerequisites){
             int course=p[0];
             int pre=p[1];
             graph.get(pre).add(course);
+            indegree[course]++;
         }
-        int[] state= new int[numCourses];
+        Queue<Integer> queue=new LinkedList<>();
         for(int i=0;i<numCourses;i++){
-            if(state[i]==0){
-                if (dfs(i,graph,state)){
-                    return false;
+            if(indegree[i]==0){
+                queue.add(i);
+            }
+        }
+        int count=0;
+        while(!queue.isEmpty()){
+            int current=queue.poll();
+            count++;
+            for(int neighbour:graph.get(current)){
+                indegree[neighbour]--;
+                if(indegree[neighbour]==0){
+                    queue.add(neighbour);
+
                 }
             }
+
         }
-        return true;
-    }
-    private boolean dfs(int node,ArrayList<ArrayList<Integer>>graph,int[] state){
-        if (state[node]==1){
-            return true;
-        }
-        if(state[node]==2){
-            return false;
-        }
-        state[node]=1;
-        for(int neighbours:graph.get(node)){
-            if(dfs(neighbours,graph,state)){
-                return true;
-            }
-        }
-        state[node]=2;
-        return false;
+        return count==numCourses;
     }
 }
